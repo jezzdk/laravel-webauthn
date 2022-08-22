@@ -22,45 +22,36 @@
     </head>
     <body class="antialiased">
         <div class="relative flex items-top justify-center min-h-screen bg-gray-100 dark:bg-gray-900 sm:items-center py-4 sm:pt-0">
-            @if (Route::has('login'))
-                <div class="hidden fixed top-0 right-0 px-6 py-4 sm:block">
-                    @auth
-                        <a href="{{ url('/home') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Home</a>
-                    @else
-                        <a href="{{ route('login') }}" class="text-sm text-gray-700 dark:text-gray-500 underline">Log in</a>
+            @include('navbar')
 
-                        @if (Route::has('register'))
-                            <a href="{{ route('register') }}" class="ml-4 text-sm text-gray-700 dark:text-gray-500 underline">Register</a>
-                        @endif
-                    @endauth
+            <div>
+                <h2 class="text-3xl text-red-500 mb-4 text-center">Log in</h2>
+                <div class="max-w-6xl mx-auto sm:p-6 lg:p-8 rounded-lg shadow-lg bg-white">
+
+                    <form method="POST" action="{{ route('login') }}" id="login-form">
+                        @csrf
+
+                        <!-- Email Address -->
+                        <div>
+                            <label for="email">E-mail</label>
+
+                            <input id="email" class="block mt-1 w-full border-gray-400 border rounded p-2" type="email" name="email" value="{{ old('email') }}" required autofocus />
+                        </div>
+
+                        <div class="flex items-center justify-end mt-4">
+                            @if (Route::has('password.request'))
+                                <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('webauthn.lost.form') }}">
+                                    {{ __('Lost your device?') }}
+                                </a>
+                            @endif
+
+                            <button type="submit" class="ml-3 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">
+                                {{ __('Submit') }}
+                            </button>
+                        </div>
+                    </form>
+
                 </div>
-            @endif
-
-            <div class="max-w-6xl mx-auto sm:p-6 lg:p-8 rounded-lg shadow-lg bg-white">
-
-                <form method="POST" action="{{ route('login') }}" id="login-form">
-                    @csrf
-
-                    <!-- Email Address -->
-                    <div>
-                        <label for="email">E-mail</label>
-
-                        <input id="email" class="block mt-1 w-full border-gray-400 border rounded p-2" type="email" name="email" value="{{ old('email') }}" required autofocus />
-                    </div>
-
-                    <div class="flex items-center justify-end mt-4">
-                        @if (Route::has('password.request'))
-                            <a class="underline text-sm text-gray-600 hover:text-gray-900" href="{{ route('webauthn.lost.form') }}">
-                                {{ __('Lost your device?') }}
-                            </a>
-                        @endif
-
-                        <button type="submit" class="ml-3 bg-blue-600 hover:bg-blue-700 px-4 py-2 rounded text-white">
-                            {{ __('Log in') }}
-                        </button>
-                    </div>
-                </form>
-
             </div>
         </div>
 
@@ -71,8 +62,14 @@
 
                 new WebAuthn().login({
                     email: document.getElementById('email').value,
-                }).then(response => alert('Authentication successful!'))
-                .catch(error => alert('Something went wrong, try again!'))
+                }).then(response => {
+                    //alert('Authentication successful!');
+                    top.location.href = '/home';
+                })
+                .catch(error => {
+                    alert('Something went wrong, try again!');
+                    console.log(error);
+                })
             }
 
             document.getElementById('login-form').addEventListener('submit', login)

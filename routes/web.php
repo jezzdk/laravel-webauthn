@@ -18,6 +18,10 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/home', function () {
+    return view('home');
+})->middleware('auth');
+
 Route::get('/login', function () {
     return view('login');
 })->name('login');
@@ -28,3 +32,9 @@ Route::get('/register', function () {
 
 // WebAuthn Routes
 WebAuthn::routes();
+
+// Log out
+Route::get('/logout', function () {
+    auth()->logout();
+    return redirect('/');
+})->name('logout');
